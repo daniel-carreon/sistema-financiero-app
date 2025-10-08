@@ -1,0 +1,465 @@
+'use client'
+
+import { Mermaid } from '@/components/Mermaid'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+export default function ReportPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-emerald-600 to-cyan-600 text-white py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Zazil Tunich - Sistema de Gestión Financiera
+          </h1>
+          <p className="text-xl md:text-2xl text-emerald-100 mb-6">
+            MVP - Plataforma Integral de Gestión de Gastos e Ingresos
+          </p>
+          <div className="flex gap-4 flex-wrap">
+            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium">
+              🚀 Telegram Bot + IA
+            </span>
+            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium">
+              📊 Dashboard en Tiempo Real
+            </span>
+            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium">
+              ⚡ Automatización N8N
+            </span>
+            <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium">
+              🗄️ Base de Datos Profesional
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        {/* Executive Summary */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-emerald-500 pb-4">
+            📋 Resumen Ejecutivo
+          </h2>
+          <div className="prose dark:prose-invert max-w-none">
+            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              Sistema completo de gestión financiera para <strong>Zazil Tunich</strong>, diseñado para automatizar
+              el registro y análisis de transacciones mediante inteligencia artificial conversacional.
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 mt-6">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-xl border-2 border-emerald-200 dark:border-emerald-800">
+                <div className="text-4xl mb-2">⏱️</div>
+                <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">Tiempo Ahorrado</div>
+                <div className="text-gray-600 dark:text-gray-400">80% reducción en tiempo de registro</div>
+              </div>
+              <div className="bg-cyan-50 dark:bg-cyan-900/20 p-6 rounded-xl border-2 border-cyan-200 dark:border-cyan-800">
+                <div className="text-4xl mb-2">🎯</div>
+                <div className="text-2xl font-bold text-cyan-700 dark:text-cyan-400">Precisión</div>
+                <div className="text-gray-600 dark:text-gray-400">IA categoriza automáticamente</div>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border-2 border-blue-200 dark:border-blue-800">
+                <div className="text-4xl mb-2">📊</div>
+                <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">Visibilidad</div>
+                <div className="text-gray-600 dark:text-gray-400">Dashboard en tiempo real 24/7</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Architecture Diagram */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-cyan-500 pb-4">
+            🏗️ Arquitectura del Sistema
+          </h2>
+          <Mermaid chart={`
+graph TB
+    A[Usuario: Armando/Equipo] -->|Mensaje de Texto| B[Bot Telegram]
+    A -->|Foto de Factura| B
+    A -->|Mensaje de Voz| B
+
+    B --> C[N8N Workflow]
+
+    C -->|Si es foto| D[Google Drive]
+    C -->|Si es voz| E[OpenAI Whisper]
+    E -->|Transcripción| C
+
+    C --> F[Agente IA GPT-4o-mini]
+
+    F -->|Detecta: Gasto| G[Tool: Registrar Gasto]
+    F -->|Detecta: Ingreso| H[Tool: Registrar Ingreso]
+    F -->|Detecta: Consulta| I[Tool: Consultar Datos]
+
+    G --> J[Supabase PostgreSQL]
+    H --> J
+    I --> J
+
+    J -->|Actualización en Tiempo Real| K[Dashboard Next.js]
+    K -->|Visualización| L[KPIs + Gráficas]
+
+    M[Schedule Trigger: 6 PM] -->|Diario| N[Workflow Reporte]
+    N -->|Query| J
+    N -->|Envío| B
+
+    style A fill:#e3f2fd
+    style F fill:#fff3e0
+    style J fill:#f3e5f5
+    style K fill:#e8f5e9
+          `} />
+          <div className="mt-6 bg-gray-50 dark:bg-gray-900 p-6 rounded-xl">
+            <h3 className="font-bold text-lg mb-3 text-gray-900 dark:text-white">📌 Componentes Clave:</h3>
+            <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+              <li className="flex items-start">
+                <span className="text-emerald-500 mr-2">✓</span>
+                <span><strong>Telegram Bot:</strong> Interface conversacional para usuarios</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-emerald-500 mr-2">✓</span>
+                <span><strong>N8N Workflows:</strong> 2 workflows (Agente Contable + Reporte Diario)</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-emerald-500 mr-2">✓</span>
+                <span><strong>Agente IA:</strong> GPT-4o-mini con herramientas personalizadas</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-emerald-500 mr-2">✓</span>
+                <span><strong>Supabase:</strong> Base de datos PostgreSQL + Storage</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-emerald-500 mr-2">✓</span>
+                <span><strong>Dashboard:</strong> Next.js 14 con visualización en tiempo real</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Workflow N8N Detalle */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-purple-500 pb-4">
+            ⚙️ Flujos de Trabajo N8N
+          </h2>
+
+          <div className="space-y-8">
+            {/* Workflow 1 */}
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-purple-600 dark:text-purple-400">
+                1️⃣ Zazil Tunich - Agente Contable
+              </h3>
+              <Mermaid chart={`
+graph LR
+    A[Telegram Trigger] --> B{Switch: Tipo de Mensaje}
+
+    B -->|Foto| C[If: ¿Tiene Caption?]
+    C -->|Sí| D1[Download File1]
+    C -->|No| D2[Download File]
+    D1 --> E1[Upload to Drive]
+    D2 --> E2[Upload to Drive]
+    E1 --> F1[Set Text1]
+    E2 --> F2[Set Text]
+
+    B -->|Texto| G[Agente IA]
+    F1 --> G
+    F2 --> G
+
+    B -->|Voz| H[Get a file]
+    H --> I[Whisper Transcribe]
+    I --> J[Edit Fields]
+    J --> G
+
+    G --> K[Respond]
+
+    L[OpenAI Chat Model] -.->|ai_languageModel| G
+    M[Simple Memory] -.->|ai_memory| G
+
+    style A fill:#e1f5fe
+    style G fill:#fff3e0
+    style K fill:#e8f5e9
+              `} />
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-xl mt-4">
+                <h4 className="font-bold mb-3 text-gray-900 dark:text-white">🎯 Funcionalidades:</h4>
+                <ul className="grid md:grid-cols-2 gap-3 text-gray-700 dark:text-gray-300">
+                  <li>• Procesamiento de texto, voz e imágenes</li>
+                  <li>• Categorización automática inteligente</li>
+                  <li>• Memoria conversacional (contexto)</li>
+                  <li>• 3 herramientas conectadas a Supabase</li>
+                  <li>• Respuestas en español con emojis</li>
+                  <li>• Almacenamiento de facturas en Drive</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Workflow 2 */}
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-cyan-600 dark:text-cyan-400">
+                2️⃣ Zazil Tunich - Reporte Diario
+              </h3>
+              <Mermaid chart={`
+graph LR
+    A[Schedule: 6 PM] --> B[Get Daily Summary]
+    B --> C[Get Transactions]
+    C --> D[Format Report]
+    D --> E[Send to Telegram]
+
+    F[(Supabase)] -.->|Query| B
+    F -.->|Query| C
+
+    style A fill:#fff3e0
+    style D fill:#e8f5e9
+    style E fill:#e1f5fe
+              `} />
+              <div className="bg-cyan-50 dark:bg-cyan-900/20 p-6 rounded-xl mt-4">
+                <h4 className="font-bold mb-3 text-gray-900 dark:text-white">📊 Contenido del Reporte:</h4>
+                <div className="space-y-2 text-gray-700 dark:text-gray-300">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-cyan-500 text-white px-2 py-1 rounded text-xs font-bold">Ingresos</span>
+                    Total del día + desglose por categoría
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">Gastos</span>
+                    Total del día + desglose por categoría
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-emerald-500 text-white px-2 py-1 rounded text-xs font-bold">Balance</span>
+                    Ingresos - Gastos con indicador visual
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">Link</span>
+                    URL directa al dashboard
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Database Schema */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-emerald-500 pb-4">
+            🗄️ Esquema de Base de Datos
+          </h2>
+
+          <Mermaid chart={`
+erDiagram
+    TRANSACCIONES ||--o{ CATEGORIAS : "pertenece_a"
+    TRANSACCIONES {
+        uuid id PK
+        timestamptz fecha_hora
+        varchar tipo "gasto|ingreso"
+        varchar categoria FK
+        decimal monto
+        text descripcion
+        varchar punto_venta
+        varchar usuario_telegram_id
+        varchar usuario_nombre
+        text factura_url
+        int num_pax
+        varchar metodo_pago
+        varchar status
+    }
+    CATEGORIAS {
+        id id PK
+        varchar nombre
+        varchar tipo "gasto|ingreso"
+    }
+    RESUMEN_DIARIO {
+        date fecha
+        decimal total_ingresos
+        decimal total_gastos
+        decimal balance
+        int num_transacciones
+    }
+          `} />
+
+          <div className="grid md:grid-cols-2 gap-6 mt-6">
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-xl">
+              <h4 className="font-bold text-lg mb-3 text-emerald-700 dark:text-emerald-400">📁 Tabla: transacciones</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                Almacena cada gasto e ingreso con metadatos completos.
+              </p>
+              <ul className="text-sm space-y-1 text-gray-700 dark:text-gray-300">
+                <li>• 150 registros de demo (Septiembre 2025)</li>
+                <li>• Índices para consultas rápidas</li>
+                <li>• Soporte para facturas adjuntas</li>
+                <li>• Track de usuario y punto de venta</li>
+              </ul>
+            </div>
+            <div className="bg-cyan-50 dark:bg-cyan-900/20 p-6 rounded-xl">
+              <h4 className="font-bold text-lg mb-3 text-cyan-700 dark:text-cyan-400">🏷️ Tabla: categorias</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                14 categorías predefinidas para clasificación.
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <p className="font-semibold text-red-600 dark:text-red-400">Gastos (8):</p>
+                  <ul className="text-gray-600 dark:text-gray-400">
+                    <li>• Nómina</li>
+                    <li>• Mantenimiento</li>
+                    <li>• Compras</li>
+                    <li>• Gasolina</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-green-600 dark:text-green-400">Ingresos (6):</p>
+                  <ul className="text-gray-600 dark:text-gray-400">
+                    <li>• Tours</li>
+                    <li>• Comedor</li>
+                    <li>• Tienda</li>
+                    <li>• Reservaciones</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-xl mt-6">
+            <h4 className="font-bold text-lg mb-3 text-purple-700 dark:text-purple-400">📊 Vista: resumen_diario</h4>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              <strong>Vista SQL automática</strong> que calcula totales diarios agregando transacciones por fecha.
+              Usada por el dashboard y reportes para mostrar KPIs sin cálculos redundantes.
+            </p>
+          </div>
+        </section>
+
+        {/* Features Implemented */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-blue-500 pb-4">
+            ✅ Features Implementadas
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="bg-emerald-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">1</div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Bot Telegram Conversacional</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Registro de gastos/ingresos por texto, voz o foto con IA que entiende lenguaje natural
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="bg-cyan-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">2</div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Dashboard en Tiempo Real</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    KPIs de ingresos, gastos, balance y gráficas de tendencia con dark/light mode
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="bg-purple-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">3</div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Reportes Diarios Automáticos</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Reporte enviado a Telegram cada día a las 6 PM con resumen completo
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">4</div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Base de Datos Profesional</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Supabase PostgreSQL con vistas automáticas y 150 transacciones de demo
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">5</div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Almacenamiento de Facturas</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Google Drive para guardar fotos de facturas con URLs de referencia
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="bg-pink-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">6</div>
+                <div>
+                  <h4 className="font-bold text-gray-900 dark:text-white">Responsive Design</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Dashboard optimizado para móvil, tablet y desktop con theme switcher
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* URLs y Acceso */}
+        <section className="bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl shadow-xl p-8 mb-8 text-white">
+          <h2 className="text-3xl font-bold mb-6 border-b-4 border-white/30 pb-4">
+            🔗 URLs de Acceso
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+              <h4 className="font-bold text-lg mb-3">📊 Dashboard</h4>
+              <a href="https://dashboard-zaziltunich.vercel.app" target="_blank" rel="noopener" className="text-sm hover:underline break-all">
+                https://dashboard-zaziltunich.vercel.app
+              </a>
+              <p className="text-xs mt-2 text-emerald-100">Password: zaziltunich2025</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl">
+              <h4 className="font-bold text-lg mb-3">⚙️ N8N Workflows</h4>
+              <a href="https://n8n-automations.danielcarreon.site" target="_blank" rel="noopener" className="text-sm hover:underline break-all">
+                https://n8n-automations.danielcarreon.site
+              </a>
+              <p className="text-xs mt-2 text-emerald-100">2 workflows configurados y listos</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Next Steps */}
+        <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-orange-500 pb-4">
+            🚀 Próximos Pasos (Post-MVP)
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
+              <span className="text-2xl">📊</span>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white">Analytics Avanzados</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Gráficas comparativas, proyecciones, análisis de tendencias y alertas inteligentes
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+              <span className="text-2xl">👥</span>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white">Multi-Usuario</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Sistema de roles (admin, contador, empleado) con permisos granulares
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+              <span className="text-2xl">🔄</span>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white">Integraciones</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  SAT (facturación), bancos (conciliación), WhatsApp Business, Slack
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl">
+              <span className="text-2xl">📱</span>
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white">App Móvil Nativa</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  iOS y Android para acceso offline y notificaciones push
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <div className="mt-12 text-center text-gray-500 dark:text-gray-400 text-sm">
+          <p>Sistema desarrollado con Next.js, Supabase, N8N y OpenAI</p>
+          <p className="mt-2">Zazil Tunich © 2025 · Todos los derechos reservados</p>
+        </div>
+      </div>
+    </div>
+  )
+}
