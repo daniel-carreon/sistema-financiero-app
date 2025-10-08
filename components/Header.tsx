@@ -23,7 +23,7 @@ export function Header() {
           {/* Logo/Title */}
           <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              🏛️ Zazil Tunich
+              💰 Sistema Financiero
             </h1>
           </Link>
 
