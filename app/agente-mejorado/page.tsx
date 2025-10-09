@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { Send, Upload, X, Bot, Loader2, Square, Brain } from 'lucide-react'
 import { useEnhancedChat } from '@/hooks/useEnhancedChat'
 import { useImageUpload } from '@/hooks/useImageUpload'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 export default function AgenteMejoradoPage() {
   const [input, setInput] = useState('')
@@ -248,19 +250,6 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
       <div className="fixed -z-40 top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 dark:from-emerald-500/20 dark:to-cyan-500/20 rounded-full blur-3xl animate-pulse" />
       <div className="fixed -z-40 bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
-      {/* Header */}
-      <div className="mb-4 relative z-10">
-        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 dark:from-emerald-400 dark:to-cyan-400 bg-clip-text text-transparent mb-2 flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 dark:from-emerald-500/20 dark:to-cyan-500/20 rounded-2xl backdrop-blur-xl border-2 border-emerald-500/50 dark:border-emerald-500/30 shadow-2xl">
-            <Bot className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-          </div>
-          Agente IA con OCR
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm ml-16">
-          Sube tickets y te ayudo a registrarlos automáticamente
-        </p>
-      </div>
-
       {/* Chat Container con GLASSMORPHISM EXTREMO */}
       <div
         ref={chatContainerRef}
@@ -317,7 +306,16 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
                   ))}
                 </div>
               )}
-              <p className="whitespace-pre-wrap relative z-10">{msg.content}</p>
+              {/* Renderizado de Markdown para respuestas del asistente */}
+              {msg.role === 'assistant' ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none relative z-10">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.content}
+                  </ReactMarkdown>
+                </div>
+              ) : (
+                <p className="whitespace-pre-wrap relative z-10">{msg.content}</p>
+              )}
 
               {/* ✨ Indicador de PENSANDO vs ESCRIBIENDO */}
               {msg.isThinking && (
@@ -343,7 +341,7 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
 
       {/* Image Previews con GLASSMORPHISM */}
       {selectedImages.length > 0 && (
-        <div className="relative flex gap-3 mb-3 overflow-x-auto p-3 bg-white/10 dark:bg-white/5 backdrop-blur-2xl rounded-2xl border-2 border-white/20 dark:border-white/10 shadow-xl">
+        <div className="relative flex gap-3 mb-4 overflow-x-auto p-4 bg-white/10 dark:bg-white/5 backdrop-blur-2xl rounded-2xl border-2 border-white/20 dark:border-white/10 shadow-xl">
           {selectedImages.map((img) => (
             <div key={img.id} className="relative group">
               <div className="relative overflow-hidden rounded-xl border-2 border-white/30 dark:border-white/20 shadow-lg">
@@ -365,13 +363,13 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
         </div>
       )}
 
-      {/* Input Form con GLASSMORPHISM EXTREMO */}
+      {/* Input Form con GLASSMORPHISM */}
       <form
         onSubmit={(e) => {
           e.preventDefault()
           handleSend()
         }}
-        className="relative flex gap-3 p-2 bg-white/10 dark:bg-white/5 backdrop-blur-2xl rounded-2xl border-2 border-white/20 dark:border-white/10 shadow-2xl"
+        className="relative flex gap-3 p-4 bg-white/10 dark:bg-white/5 backdrop-blur-2xl rounded-2xl shadow-2xl border-2 border-white/20 dark:border-white/10"
       >
         <label className="cursor-pointer group">
           <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 dark:from-emerald-500/10 dark:to-cyan-500/10 backdrop-blur-xl rounded-xl hover:scale-110 hover:shadow-2xl transition-all duration-200 border-2 border-emerald-500/30 dark:border-emerald-500/20">
