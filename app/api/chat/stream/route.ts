@@ -56,6 +56,10 @@ Sé amigable y confirma con resumen detallado.`
             max_tokens: 2000,
             temperature: 0.7,
             stream: true,
+            // ✨ Activar thinking mode de Gemini 2.5 Flash
+            thinking_config: {
+              max_thinking_tokens: 500,  // Tokens dedicados a razonamiento interno
+            },
             tools: [
               {
                 type: 'function',
@@ -130,6 +134,10 @@ Sé amigable y confirma con resumen detallado.`
         let buffer = ''
         let toolCallData: any = null
         let collectedToolCall = { name: '', arguments: '' }
+        let hasStartedGenerating = false  // ✨ Para detectar la transición de pensando → escribiendo
+
+        // ✨ Enviar evento inicial de "pensando"
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ thinking: true })}\n\n`))
 
         while (true) {
           const { done, value } = await reader.read()
@@ -160,8 +168,14 @@ Sé amigable y confirma con resumen detallado.`
                   }
                 }
 
-                // Enviar contenido normal al cliente
+                // ✨ Cuando empiece a generar contenido, cambiar a "escribiendo"
                 if (json.choices?.[0]?.delta?.content) {
+                  // Primera vez que recibimos contenido → transición thinking → writing
+                  if (!hasStartedGenerating) {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ thinking: false })}\n\n`))
+                    hasStartedGenerating = true
+                  }
+
                   const chunk = json.choices[0].delta.content
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk })}\n\n`))
                 }

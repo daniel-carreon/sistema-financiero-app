@@ -6,12 +6,14 @@ interface Message {
   content: string
   images?: string[]
   isStreaming?: boolean
+  isThinking?: boolean  // ✨ Nuevo: indica si está en modo pensamiento
 }
 
 interface UseEnhancedChatReturn {
   messages: Message[]
   isLoading: boolean
   isStreaming: boolean
+  isThinking: boolean  // ✨ Nuevo: estado global de pensamiento
   sendMessage: (message: string, images?: string[]) => Promise<void>
   stopGeneration: () => void
   clearMessages: () => void
@@ -21,6 +23,7 @@ export function useEnhancedChat(): UseEnhancedChatReturn {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
+  const [isThinking, setIsThinking] = useState(false)  // ✨ Nuevo: estado de pensamiento
   const abortControllerRef = useRef<AbortController | null>(null)
 
   const stopGeneration = useCallback(() => {
@@ -30,6 +33,7 @@ export function useEnhancedChat(): UseEnhancedChatReturn {
     }
     setIsStreaming(false)
     setIsLoading(false)
+    setIsThinking(false)  // ✨ Reset thinking state
   }, [])
 
   const sendMessage = useCallback(async (userMessage: string, images?: string[]) => {
@@ -96,23 +100,36 @@ export function useEnhancedChat(): UseEnhancedChatReturn {
             try {
               const data = JSON.parse(line.slice(6))
 
+              // ✨ Detectar modo pensamiento
+              if (data.thinking !== undefined) {
+                setIsThinking(data.thinking)
+                setMessages(prev =>
+                  prev.map(msg =>
+                    msg.id === assistantMsgId
+                      ? { ...msg, isThinking: data.thinking }
+                      : msg
+                  )
+                )
+              }
+
               if (data.chunk) {
                 accumulatedContent += data.chunk
 
                 setMessages(prev =>
                   prev.map(msg =>
                     msg.id === assistantMsgId
-                      ? { ...msg, content: accumulatedContent }
+                      ? { ...msg, content: accumulatedContent, isThinking: false }
                       : msg
                   )
                 )
               }
 
               if (data.done) {
+                setIsThinking(false)
                 setMessages(prev =>
                   prev.map(msg =>
                     msg.id === assistantMsgId
-                      ? { ...msg, isStreaming: false }
+                      ? { ...msg, isStreaming: false, isThinking: false }
                       : msg
                   )
                 )
@@ -138,6 +155,7 @@ export function useEnhancedChat(): UseEnhancedChatReturn {
     } finally {
       setIsLoading(false)
       setIsStreaming(false)
+      setIsThinking(false)  // ✨ Reset thinking state
       abortControllerRef.current = null
     }
   }, [messages])
@@ -150,6 +168,7 @@ export function useEnhancedChat(): UseEnhancedChatReturn {
     messages,
     isLoading,
     isStreaming,
+    isThinking,  // ✨ Exponer estado de pensamiento
     sendMessage,
     stopGeneration,
     clearMessages,

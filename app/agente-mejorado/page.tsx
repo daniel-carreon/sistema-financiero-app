@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Send, Upload, X, Bot, Loader2, Square } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Send, Upload, X, Bot, Loader2, Square, Brain } from 'lucide-react'
 import { useEnhancedChat } from '@/hooks/useEnhancedChat'
 import { useImageUpload } from '@/hooks/useImageUpload'
 
@@ -11,10 +11,16 @@ export default function AgenteMejoradoPage() {
   const [loadingState, setLoadingState] = useState<'idle' | 'uploading' | 'analyzing' | 'thinking' | 'writing'>('idle')
   const [loadingMessage, setLoadingMessage] = useState('')
 
+  // ✨ Auto-scroll refs
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+  const [userHasScrolled, setUserHasScrolled] = useState(false)
+
   const {
     messages,
     isLoading,
     isStreaming,
+    isThinking,
     sendMessage,
     stopGeneration,
   } = useEnhancedChat()
@@ -27,6 +33,39 @@ export default function AgenteMejoradoPage() {
     clearImages,
     uploadImages,
   } = useImageUpload()
+
+  // ✨ AUTO-SCROLL: Scroll automático al final cuando llegan mensajes nuevos
+  useEffect(() => {
+    // Solo hacer auto-scroll si el usuario NO ha hecho scroll manual
+    if (!userHasScrolled && messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }, [messages, userHasScrolled])
+
+  // ✨ DETECTAR SCROLL MANUAL: Si el usuario hace scroll, pausar auto-scroll
+  useEffect(() => {
+    const container = chatContainerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+
+      // Si el usuario está cerca del final, reactivar auto-scroll
+      // Si está lejos, significa que hizo scroll hacia arriba
+      setUserHasScrolled(!isNearBottom)
+    }
+
+    container.addEventListener('scroll', handleScroll)
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // ✨ RESET AUTO-SCROLL: Cuando se envía un mensaje nuevo, reactivar auto-scroll
+  useEffect(() => {
+    if (isStreaming) {
+      setUserHasScrolled(false)
+    }
+  }, [isStreaming])
 
   // 📋 CLIPBOARD PASTE: Ctrl+V para pegar imágenes
   useEffect(() => {
@@ -223,7 +262,10 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
       </div>
 
       {/* Chat Container con GLASSMORPHISM EXTREMO */}
-      <div className="flex-1 relative overflow-hidden bg-white/10 dark:bg-white/5 backdrop-blur-3xl rounded-3xl shadow-2xl border-2 border-white/20 dark:border-white/10 overflow-y-auto p-4 space-y-4 mb-4">
+      <div
+        ref={chatContainerRef}
+        className="flex-1 relative overflow-hidden bg-white/10 dark:bg-white/5 backdrop-blur-3xl rounded-3xl shadow-2xl border-2 border-white/20 dark:border-white/10 overflow-y-auto p-4 space-y-4 mb-4"
+      >
         {/* Múltiples capas de glassmorphism */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/5 to-transparent dark:from-white/10 dark:via-white/5 dark:to-transparent pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-tl from-emerald-500/10 via-transparent to-cyan-500/10 dark:from-emerald-500/5 dark:via-transparent dark:to-cyan-500/5 pointer-events-none" />
@@ -276,7 +318,16 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
                 </div>
               )}
               <p className="whitespace-pre-wrap relative z-10">{msg.content}</p>
-              {msg.isStreaming && (
+
+              {/* ✨ Indicador de PENSANDO vs ESCRIBIENDO */}
+              {msg.isThinking && (
+                <div className="mt-3 flex items-center gap-2 text-sm opacity-90 bg-gradient-to-r from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10 backdrop-blur-xl rounded-lg p-2 border border-purple-400/30 dark:border-purple-400/20">
+                  <Brain className="w-4 h-4 animate-pulse text-purple-600 dark:text-purple-400" />
+                  <span className="font-medium text-purple-700 dark:text-purple-300">Pensando...</span>
+                </div>
+              )}
+
+              {msg.isStreaming && !msg.isThinking && (
                 <div className="mt-2 flex items-center gap-2 text-sm opacity-70">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Escribiendo...
@@ -285,6 +336,9 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
             </div>
           </div>
         ))}
+
+        {/* ✨ Scroll anchor: referencia para auto-scroll */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Image Previews con GLASSMORPHISM */}
