@@ -22,7 +22,7 @@ Un dashboard moderno y completo para el seguimiento de transacciones financieras
 
 ### 🤖 Agente IA
 - Chat interactivo con asistente financiero
-- Análisis de datos con OpenAI
+- Análisis de datos con OpenRouter (GPT-4o-mini)
 - Recomendaciones personalizadas
 - Procesamiento de imágenes (tickets, recibos)
 
@@ -55,8 +55,8 @@ Un dashboard moderno y completo para el seguimiento de transacciones financieras
 - **Storage**: Supabase Storage
 
 ### AI & APIs
-- **Chat**: OpenAI API
-- **Image Processing**: OpenAI Vision API
+- **Chat**: OpenRouter (GPT-4o-mini)
+- **Image Processing**: OpenRouter Vision Models
 
 ---
 
@@ -65,7 +65,7 @@ Un dashboard moderno y completo para el seguimiento de transacciones financieras
 ### Prerrequisitos
 - Node.js 20+ y npm
 - Cuenta de Supabase
-- API Key de OpenAI (opcional, para funciones de IA)
+- API Key de OpenRouter (opcional, para funciones de IA)
 
 ### Pasos
 
@@ -91,8 +91,8 @@ Edita `.env.local` con tus credenciales:
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# OpenAI (opcional)
-OPENAI_API_KEY=your-openai-api-key
+# OpenRouter (opcional)
+OPENROUTER_API_KEY=your-openrouter-api-key
 ```
 
 4. **Ejecutar en desarrollo**
@@ -262,7 +262,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 - [Next.js](https://nextjs.org/) - Framework React
 - [Supabase](https://supabase.com/) - Backend as a Service
-- [OpenAI](https://openai.com/) - API de IA
+- [OpenRouter](https://openrouter.ai/) - API unificada de IA
 - [Tailwind CSS](https://tailwindcss.com/) - Utilidades CSS
 - [Chart.js](https://www.chartjs.org/) - Gráficas
 
