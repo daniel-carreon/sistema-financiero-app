@@ -73,15 +73,37 @@ export async function POST(request: NextRequest) {
 
 **RESPONDE SOLO CON JSON (sin markdown, sin explicaciones):**
 
-Si ES ticket:
+Ejemplo 1 - Ticket de gasolinera:
 {
   "es_ticket": true,
   "monto": 450.50,
   "comercio": "Pemex",
-  "categoria_sugerida": "Gasolina",
+  "categoria_sugerida": "Transporte",
   "items": ["Magna Premium 30L", "Total"],
   "fecha": "2025-10-06",
   "descripcion": "Llenado de combustible en Pemex"
+}
+
+Ejemplo 2 - Ticket de supermercado:
+{
+  "es_ticket": true,
+  "monto": 350.00,
+  "comercio": "Walmart",
+  "categoria_sugerida": "Alimentación",
+  "items": ["Leche", "Pan", "Huevos", "Verduras"],
+  "fecha": "2025-10-09",
+  "descripcion": "Compra de despensa en Walmart"
+}
+
+Ejemplo 3 - Ticket de restaurante:
+{
+  "es_ticket": true,
+  "monto": 280.00,
+  "comercio": "Restaurante La Casa",
+  "categoria_sugerida": "Alimentación",
+  "items": ["2x Tacos", "1x Refresco", "Propina"],
+  "fecha": "2025-10-09",
+  "descripcion": "Comida en restaurante"
 }
 
 Si NO ES ticket (screenshot, foto aleatoria, etc):
