@@ -56,15 +56,15 @@ export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendCh
     switch (vista) {
       case 'diaria':
         startDate = new Date()
-        startDate.setHours(0, 0, 0, 0)
+        startDate.setDate(startDate.getDate() - 7) // Últimos 7 días
         break
       case 'semanal':
         startDate = new Date()
-        startDate.setDate(startDate.getDate() - 7)
+        startDate.setDate(startDate.getDate() - 28) // Últimas 4 semanas
         break
       case 'mensual':
         startDate = new Date()
-        startDate.setDate(startDate.getDate() - 30)
+        startDate.setMonth(startDate.getMonth() - 12) // Últimos 12 meses
         break
       case 'personalizada':
         if (!fechaInicio || !fechaFin) {
@@ -78,17 +78,39 @@ export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendCh
         startDate.setDate(startDate.getDate() - 30)
     }
 
+    // Consultar transacciones en lugar de resumen_diario
     const { data } = await supabase
-      .from('resumen_diario')
+      .from('transacciones')
       .select('*')
-      .gte('fecha', startDate.toISOString().split('T')[0])
-      .lte('fecha', endDate.toISOString().split('T')[0])
+      .gte('fecha', startDate.toISOString())
+      .lte('fecha', endDate.toISOString())
       .order('fecha', { ascending: true })
 
-    if (data) {
-      const labels = data.map(row => new Date(row.fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' }))
-      const ingresos = data.map(row => parseFloat(row.total_ingresos || 0))
-      const gastos = data.map(row => parseFloat(row.total_gastos || 0))
+    if (data && data.length > 0) {
+      // Agrupar por fecha y calcular totales
+      const groupedByDate: Record<string, { ingresos: number; gastos: number }> = {}
+
+      data.forEach(row => {
+        const fecha = new Date(row.fecha).toISOString().split('T')[0]
+        if (!groupedByDate[fecha]) {
+          groupedByDate[fecha] = { ingresos: 0, gastos: 0 }
+        }
+
+        const monto = parseFloat(row.monto || 0)
+        if (row.tipo === 'ingreso') {
+          groupedByDate[fecha].ingresos += monto
+        } else if (row.tipo === 'gasto') {
+          groupedByDate[fecha].gastos += monto
+        }
+      })
+
+      // Convertir a arrays para Chart.js
+      const sortedDates = Object.keys(groupedByDate).sort()
+      const labels = sortedDates.map(fecha =>
+        new Date(fecha).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' })
+      )
+      const ingresos = sortedDates.map(fecha => groupedByDate[fecha].ingresos)
+      const gastos = sortedDates.map(fecha => groupedByDate[fecha].gastos)
 
       setChartData({
         labels,
@@ -103,6 +125,27 @@ export function TrendChart({ vista = 'mensual', fechaInicio, fechaFin }: TrendCh
           {
             label: 'Gastos',
             data: gastos,
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            tension: 0.3,
+          },
+        ],
+      })
+    } else {
+      // Sin datos - mostrar gráfica vacía
+      setChartData({
+        labels: [],
+        datasets: [
+          {
+            label: 'Ingresos',
+            data: [],
+            borderColor: 'rgb(34, 197, 94)',
+            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+            tension: 0.3,
+          },
+          {
+            label: 'Gastos',
+            data: [],
             borderColor: 'rgb(239, 68, 68)',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             tension: 0.3,
