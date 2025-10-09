@@ -11,8 +11,8 @@ export function Header() {
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/registro', label: 'Registro', icon: FileText },
-    { href: '/corte-diario', label: 'Corte Diario', icon: Calendar },
-    { href: '/upload-excel', label: 'Upload CSV', icon: Upload },
+    // { href: '/corte-diario', label: 'Corte Diario', icon: Calendar },
+    // { href: '/upload-excel', label: 'Upload CSV', icon: Upload },
     { href: '/agente-mejorado', label: 'Agente IA', icon: Bot },
   ]
 
