@@ -67,22 +67,32 @@ export default function HomePage() {
         startDate.setDate(startDate.getDate() - 30)
     }
 
+    // Consultar transacciones en lugar de resumen_diario
     const { data, error } = await supabase
-      .from('resumen_diario')
+      .from('transacciones')
       .select('*')
-      .gte('fecha', startDate.toISOString().split('T')[0])
-      .lte('fecha', endDate.toISOString().split('T')[0])
+      .gte('fecha', startDate.toISOString())
+      .lte('fecha', endDate.toISOString())
 
     if (data) {
-      const totalIngresos = data.reduce((sum, row) => sum + parseFloat(row.total_ingresos || 0), 0)
-      const totalGastos = data.reduce((sum, row) => sum + parseFloat(row.total_gastos || 0), 0)
-      const totalTransacciones = data.reduce((sum, row) => sum + parseInt(row.num_transacciones || 0), 0)
+      // Calcular totales agrupando por tipo
+      let totalIngresos = 0
+      let totalGastos = 0
+
+      data.forEach(row => {
+        const monto = parseFloat(row.monto || 0)
+        if (row.tipo === 'ingreso') {
+          totalIngresos += monto
+        } else if (row.tipo === 'gasto') {
+          totalGastos += monto
+        }
+      })
 
       setKpis({
         ingresos: totalIngresos,
         gastos: totalGastos,
         balance: totalIngresos - totalGastos,
-        transacciones: totalTransacciones,
+        transacciones: data.length,
       })
     }
 

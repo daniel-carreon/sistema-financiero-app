@@ -7,7 +7,7 @@ type Vista = 'diaria' | 'semanal' | 'mensual' | 'personalizada'
 
 interface Transaccion {
   id: string
-  fecha_hora: string
+  fecha: string
   tipo: 'gasto' | 'ingreso'
   categoria: string
   monto: number
@@ -104,8 +104,8 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
       switch (ordenColumna) {
         case 'fecha':
-          valorA = new Date(a.fecha_hora).getTime()
-          valorB = new Date(b.fecha_hora).getTime()
+          valorA = new Date(a.fecha).getTime()
+          valorB = new Date(b.fecha).getTime()
           break
         case 'tipo':
           valorA = a.tipo
@@ -158,7 +158,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
     const grupos: { [key: string]: Transaccion[] } = {}
 
     transaccionesPaginadas.forEach((t) => {
-      const fecha = new Date(t.fecha_hora)
+      const fecha = new Date(t.fecha)
       let key = ''
 
       if (vista === 'diaria') {
@@ -453,7 +453,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
                         : 'bg-red-200/95 dark:bg-red-800/50 hover:bg-red-300 dark:hover:bg-red-700/60'
                     }`}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                        {new Date(tx.fecha_hora).toLocaleString('es-MX', {
+                        {new Date(tx.fecha).toLocaleString('es-MX', {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric',
