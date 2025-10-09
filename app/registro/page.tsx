@@ -5,16 +5,12 @@ import { supabase } from '@/lib/supabase'
 import { Upload, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 
 const CATEGORIAS_GASTOS = [
-  'Nómina', 'Mantenimiento', 'Compras', 'Gasolina',
-  'Comisiones', 'Publicidad', 'Servicios', 'Otros Gastos'
+  'Alimentación', 'Transporte', 'Vivienda', 'Salud',
+  'Entretenimiento', 'Educación', 'Otros Gastos'
 ]
 
 const CATEGORIAS_INGRESOS = [
-  'Tours', 'Comedor', 'Reservaciones', 'Anticipos', 'Otros Ingresos'
-]
-
-const USUARIOS = [
-  'Armando', 'Esposa', 'Hijo 1', 'Hijo 2', 'Hijo 3'
+  'Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos'
 ]
 
 const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Transferencia']
@@ -29,7 +25,7 @@ export default function RegistroPage() {
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [metodo_pago, setMetodoPago] = useState('Efectivo')
-  const [registrado_por, setRegistradoPor] = useState('Armando')
+  const [registrado_por, setRegistradoPor] = useState('')
   const [foto, setFoto] = useState<File | null>(null)
   const [fotoPreview, setFotoPreview] = useState<string | null>(null)
 
@@ -235,20 +231,16 @@ export default function RegistroPage() {
         {/* Registrado por */}
         <div>
           <label htmlFor="registrado_por" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Registrado Por
+            Registrado Por (opcional)
           </label>
-          <select
+          <input
+            type="text"
             id="registrado_por"
             value={registrado_por}
             onChange={(e) => setRegistradoPor(e.target.value)}
+            placeholder="Tu nombre o quién registra"
             className="w-full p-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
-          >
-            {USUARIOS.map((usuario) => (
-              <option key={usuario} value={usuario}>
-                {usuario}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Upload foto */}

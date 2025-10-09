@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-        'X-Title': 'Zazil Tunich - OCR',
+        'X-Title': 'Sistema Financiero - OCR',
       },
       body: JSON.stringify({
         model: 'openai/gpt-4o',
@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
 - Si es screenshot de chat, foto aleatoria, o documento que NO sea ticket → marca "es_ticket": false
 
 **CATEGORÍAS VÁLIDAS DEL SISTEMA:**
-- Gastos: Nómina, Mantenimiento, Compras, Gasolina, Comisiones, Publicidad, Servicios, Otros Gastos
-- Ingresos: Tours, Comedor, Reservaciones, Anticipos, Otros Ingresos
+- Gastos: Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Otros Gastos
+- Ingresos: Salario, Ventas, Servicios, Inversiones, Otros Ingresos
 
 **INSTRUCCIONES SI ES TICKET:**
 1. Extrae el MONTO TOTAL (solo número, sin símbolos)

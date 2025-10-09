@@ -20,13 +20,12 @@ export async function POST(request: NextRequest) {
         const openRouterMessages = [
           {
             role: 'system' as const,
-            content: `Eres un asistente financiero para Zazil Tunich. Registras gastos e ingresos de forma conversacional.
+            content: `Eres un asistente financiero personal. Registras gastos e ingresos de forma conversacional.
 
 📋 CATEGORÍAS VÁLIDAS:
-**Gastos:** Nómina, Mantenimiento, Compras, Gasolina, Comisiones, Publicidad, Servicios, Otros Gastos
-**Ingresos:** Tours, Comedor, Reservaciones, Anticipos, Otros Ingresos
+**Gastos:** Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Otros Gastos
+**Ingresos:** Salario, Ventas, Servicios, Inversiones, Otros Ingresos
 
-👥 USUARIOS: Armando, Esposa, Hijo 1, Hijo 2, Hijo 3
 💳 MÉTODOS: Efectivo, Tarjeta, Transferencia
 
 Sé amigable y confirma con resumen detallado.`
@@ -49,10 +48,10 @@ Sé amigable y confirma con resumen detallado.`
             'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
             'Content-Type': 'application/json',
             'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-            'X-Title': 'Zazil Tunich',
+            'X-Title': 'Sistema Financiero',
           },
           body: JSON.stringify({
-            model: 'openai/gpt-5',
+            model: 'openai/gpt-4o-mini',
             messages: openRouterMessages,
             max_tokens: 2000,
             temperature: 0.7,
@@ -69,7 +68,7 @@ Sé amigable y confirma con resumen detallado.`
                       monto: { type: 'number' },
                       categoria: {
                         type: 'string',
-                        enum: ['Nómina', 'Mantenimiento', 'Compras', 'Gasolina', 'Comisiones', 'Publicidad', 'Servicios', 'Otros Gastos']
+                        enum: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Entretenimiento', 'Educación', 'Otros Gastos']
                       },
                       descripcion: { type: 'string' },
                       metodo_pago: {
@@ -79,8 +78,7 @@ Sé amigable y confirma con resumen detallado.`
                       },
                       registrado_por: {
                         type: 'string',
-                        enum: ['Armando', 'Esposa', 'Hijo 1', 'Hijo 2', 'Hijo 3'],
-                        default: 'Armando'
+                        description: 'Nombre de quien registra'
                       }
                     },
                     required: ['monto', 'categoria']
@@ -98,7 +96,7 @@ Sé amigable y confirma con resumen detallado.`
                       monto: { type: 'number' },
                       categoria: {
                         type: 'string',
-                        enum: ['Tours', 'Comedor', 'Reservaciones', 'Anticipos', 'Otros Ingresos']
+                        enum: ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos']
                       },
                       descripcion: { type: 'string' },
                       metodo_pago: {
@@ -108,8 +106,7 @@ Sé amigable y confirma con resumen detallado.`
                       },
                       registrado_por: {
                         type: 'string',
-                        enum: ['Armando', 'Esposa', 'Hijo 1', 'Hijo 2', 'Hijo 3'],
-                        default: 'Armando'
+                        description: 'Nombre de quien registra'
                       }
                     },
                     required: ['monto', 'categoria']
@@ -154,12 +151,12 @@ Sé amigable y confirma con resumen detallado.`
                     categoria: functionArgs.categoria,
                     descripcion: functionArgs.descripcion || null,
                     metodo_pago: functionArgs.metodo_pago || 'Efectivo',
-                    registrado_por: functionArgs.registrado_por || 'Armando',
+                    registrado_por: functionArgs.registrado_por || 'Usuario',
                     fecha_hora: new Date().toISOString(),
                   })
 
                   // Enviar confirmación
-                  const confirmMsg = `✅ ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} registrado!\n\n💰 Monto: $${functionArgs.monto.toLocaleString('es-MX')}\n📁 ${functionArgs.categoria}\n👤 ${functionArgs.registrado_por || 'Armando'}`
+                  const confirmMsg = `✅ ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} registrado!\n\n💰 Monto: $${functionArgs.monto.toLocaleString('es-MX')}\n📁 ${functionArgs.categoria}\n👤 ${functionArgs.registrado_por || 'Usuario'}`
 
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: confirmMsg })}\n\n`))
                 }

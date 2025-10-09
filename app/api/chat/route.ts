@@ -30,17 +30,17 @@ export async function POST(request: NextRequest) {
     const openRouterMessages = [
       {
         role: 'system' as const,
-        content: `Eres un asistente financiero para Zazil Tunich. Tu trabajo es ayudar a registrar gastos e ingresos de forma conversacional.
+        content: `Eres un asistente financiero personal. Tu trabajo es ayudar a registrar gastos e ingresos de forma conversacional.
 
 🎯 HERRAMIENTAS DISPONIBLES:
 1. registrar_gasto - Para registrar un gasto
 2. registrar_ingreso - Para registrar un ingreso
 
 📋 CATEGORÍAS VÁLIDAS:
-**Gastos:** Nómina, Mantenimiento, Compras, Gasolina, Comisiones, Publicidad, Servicios, Otros Gastos
-**Ingresos:** Tours, Comedor, Reservaciones, Anticipos, Otros Ingresos
+**Gastos:** Alimentación, Transporte, Vivienda, Salud, Entretenimiento, Educación, Otros Gastos
+**Ingresos:** Salario, Ventas, Servicios, Inversiones, Otros Ingresos
 
-👥 USUARIOS: Armando, Esposa, Hijo 1, Hijo 2, Hijo 3
+👥 El usuario puede especificar quién registra la transacción (opcional)
 
 💳 MÉTODOS DE PAGO: Efectivo, Tarjeta, Transferencia
 
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-        'X-Title': 'Zazil Tunich - Sistema Financiero'
+        'X-Title': 'Sistema Financiero'
       },
       body: JSON.stringify({
         model: 'openai/gpt-4o-mini',
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
                   },
                   categoria: {
                     type: 'string',
-                    enum: ['Nómina', 'Mantenimiento', 'Compras', 'Gasolina', 'Comisiones', 'Publicidad', 'Servicios', 'Otros Gastos'],
+                    enum: ['Alimentación', 'Transporte', 'Vivienda', 'Salud', 'Entretenimiento', 'Educación', 'Otros Gastos'],
                     description: 'Categoría del gasto'
                   },
                   descripcion: {
@@ -115,8 +115,7 @@ export async function POST(request: NextRequest) {
                   },
                   registrado_por: {
                     type: 'string',
-                    enum: ['Armando', 'Esposa', 'Hijo 1', 'Hijo 2', 'Hijo 3'],
-                    default: 'Armando'
+                    description: 'Nombre de quien registra la transacción'
                   }
                 },
                 required: ['monto', 'categoria']
@@ -137,7 +136,7 @@ export async function POST(request: NextRequest) {
                   },
                   categoria: {
                     type: 'string',
-                    enum: ['Tours', 'Comedor', 'Reservaciones', 'Anticipos', 'Otros Ingresos'],
+                    enum: ['Salario', 'Ventas', 'Servicios', 'Inversiones', 'Otros Ingresos'],
                     description: 'Categoría del ingreso'
                   },
                   descripcion: {
@@ -151,8 +150,7 @@ export async function POST(request: NextRequest) {
                   },
                   registrado_por: {
                     type: 'string',
-                    enum: ['Armando', 'Esposa', 'Hijo 1', 'Hijo 2', 'Hijo 3'],
-                    default: 'Armando'
+                    description: 'Nombre de quien registra la transacción'
                   }
                 },
                 required: ['monto', 'categoria']
@@ -190,7 +188,7 @@ export async function POST(request: NextRequest) {
             categoria: functionArgs.categoria,
             descripcion: functionArgs.descripcion || null,
             metodo_pago: functionArgs.metodo_pago || 'Efectivo',
-            registrado_por: functionArgs.registrado_por || 'Armando',
+            registrado_por: functionArgs.registrado_por || 'Usuario',
             fecha_hora: new Date().toISOString(),
           })
 
@@ -201,7 +199,7 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json({
-          response: `✅ ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} registrado exitosamente!\n\n💰 Monto: $${functionArgs.monto.toLocaleString('es-MX')} MXN\n📁 Categoría: ${functionArgs.categoria}\n📝 Descripción: ${functionArgs.descripcion || 'N/A'}\n💳 Método: ${functionArgs.metodo_pago || 'Efectivo'}\n👤 Registrado por: ${functionArgs.registrado_por || 'Armando'}\n\nPuedes ver el resumen actualizado en el Dashboard.`
+          response: `✅ ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} registrado exitosamente!\n\n💰 Monto: $${functionArgs.monto.toLocaleString('es-MX')} MXN\n📁 Categoría: ${functionArgs.categoria}\n📝 Descripción: ${functionArgs.descripcion || 'N/A'}\n💳 Método: ${functionArgs.metodo_pago || 'Efectivo'}\n👤 Registrado por: ${functionArgs.registrado_por || 'Usuario'}\n\nPuedes ver el resumen actualizado en el Dashboard.`
         })
       }
     }

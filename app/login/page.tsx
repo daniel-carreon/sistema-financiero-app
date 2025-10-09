@@ -35,7 +35,7 @@ export default function LoginPage() {
             <span className="text-2xl">🏛️</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 tracking-tight">
-            Zazil Tunich
+            Sistema Financiero
           </h1>
           <p className="text-gray-400 text-center text-sm sm:text-base">
             Dashboard Financiero Empresarial
@@ -87,7 +87,7 @@ export default function LoginPage() {
 
         <div className="mt-8 pt-6 border-t border-gray-800">
           <p className="text-gray-500 text-xs text-center">
-            Sistema protegido · Zazil Tunich © 2025
+            Sistema protegido © 2025
           </p>
         </div>
       </div>

@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zazil Tunich - Dashboard Financiero",
-  description: "Sistema de gestión financiera para Zazil Tunich",
+  title: "Sistema Financiero - Dashboard",
+  description: "Sistema de gestión financiera personal y familiar",
 };
 
 export default function RootLayout({
