@@ -209,10 +209,11 @@ Sé amigable y confirma con resumen detallado.`
               tipo,
               monto: functionArgs.monto,
               categoria: functionArgs.categoria,
+              concepto: functionArgs.descripcion || `${tipo} - ${functionArgs.categoria}`,
               descripcion: functionArgs.descripcion || null,
               metodo_pago: functionArgs.metodo_pago || 'Efectivo',
               registrado_por: functionArgs.registrado_por || 'Usuario',
-              fecha_hora: new Date().toISOString(),
+              fecha: new Date().toISOString(),
             })
 
             // 3. Enviar confirmación DESPUÉS de registrar

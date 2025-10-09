@@ -84,11 +84,12 @@ export default function RegistroPage() {
           tipo,
           monto: parseFloat(monto),
           categoria,
+          concepto: descripcion || `${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} - ${categoria}`,
           descripcion: descripcion || null,
           metodo_pago,
           registrado_por,
           foto_url,
-          fecha_hora: new Date().toISOString(),
+          fecha: new Date().toISOString(),
         })
 
       if (insertError) throw insertError

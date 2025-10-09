@@ -26,7 +26,7 @@ export default function CorteDiarioPage() {
       monto: 0,
     }))
   )
-  const [registradoPor, setRegistradoPor] = useState('Armando')
+  const [registradoPor, setRegistradoPor] = useState('')
   const [loading, setLoading] = useState(false)
   const [mensaje, setMensaje] = useState<{ tipo: 'success' | 'error'; texto: string } | null>(null)
 
@@ -150,22 +150,19 @@ export default function CorteDiarioPage() {
           </div>
         )}
 
-        {/* Selector de usuario */}
+        {/* Registrado por */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-            👤 Registrado por
+          <label htmlFor="registrado_por" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            👤 Registrado por (opcional)
           </label>
-          <select
+          <input
+            type="text"
+            id="registrado_por"
             value={registradoPor}
             onChange={(e) => setRegistradoPor(e.target.value)}
+            placeholder="Tu nombre o quién registra"
             className="w-full p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 transition-all"
-          >
-            <option value="Armando">Armando</option>
-            <option value="Esposa">Esposa</option>
-            <option value="Hijo 1">Hijo 1</option>
-            <option value="Hijo 2">Hijo 2</option>
-            <option value="Hijo 3">Hijo 3</option>
-          </select>
+          />
         </div>
 
         {/* Grid de categorías */}

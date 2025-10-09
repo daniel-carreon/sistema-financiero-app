@@ -37,7 +37,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
 
   // Estados para paginación
   const [paginaActual, setPaginaActual] = useState(1)
-  const [itemsPorPagina, setItemsPorPagina] = useState(50)
+  const [itemsPorPagina, setItemsPorPagina] = useState(20)
 
   useEffect(() => {
     if (vistaProp) setVista(vistaProp)
@@ -531,6 +531,7 @@ export function DataViews({ vista: vistaProp, fechaInicio: fechaInicioProp, fech
               }}
               className="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
             >
+              <option value={20}>20</option>
               <option value={50}>50</option>
               <option value={100}>100</option>
               <option value={500}>500</option>
