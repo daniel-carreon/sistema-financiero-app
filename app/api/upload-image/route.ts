@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     const imageUrl = urlData.publicUrl
 
-    // 3. Analizar con GPT-4 Vision para extraer datos estructurados
+    // 3. Analizar con Gemini 2.5 Flash (multimodal con OCR mejorado)
     const visionResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         'X-Title': 'Sistema Financiero - OCR',
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o',
+        model: 'google/gemini-2.5-flash',
         messages: [
           {
             role: 'user',

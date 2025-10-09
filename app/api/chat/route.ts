@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
         'X-Title': 'Sistema Financiero'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini',
+        model: 'google/gemini-2.5-flash',
         messages: openRouterMessages,
         max_tokens: 1000,
         temperature: 0.7,

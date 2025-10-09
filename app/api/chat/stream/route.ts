@@ -51,7 +51,7 @@ Sé amigable y confirma con resumen detallado.`
             'X-Title': 'Sistema Financiero',
           },
           body: JSON.stringify({
-            model: 'openai/gpt-4o-mini',
+            model: 'google/gemini-2.5-flash',
             messages: openRouterMessages,
             max_tokens: 2000,
             temperature: 0.7,
@@ -119,55 +119,22 @@ Sé amigable y confirma con resumen detallado.`
         })
 
         if (!response.ok || !response.body) {
-          throw new Error('OpenRouter error')
+          const errorText = await response.text()
+          console.error('OpenRouter error:', response.status, errorText)
+          throw new Error(`OpenRouter error (${response.status}): ${errorText}`)
         }
 
         const reader = response.body.getReader()
         const decoder = new TextDecoder()
 
         let buffer = ''
-        let toolCallBuffer = ''
-        let isCollectingToolCall = false
+        let toolCallData: any = null
+        let collectedToolCall = { name: '', arguments: '' }
 
         while (true) {
           const { done, value } = await reader.read()
 
-          if (done) {
-            // Procesar tool call si existe
-            if (toolCallBuffer) {
-              try {
-                const toolData = JSON.parse(toolCallBuffer)
-                if (toolData.tool_calls?.[0]) {
-                  const toolCall = toolData.tool_calls[0]
-                  const functionName = toolCall.function.name
-                  const functionArgs = JSON.parse(toolCall.function.arguments)
-
-                  const tipo = functionName === 'registrar_gasto' ? 'gasto' : 'ingreso'
-
-                  // Insertar en Supabase
-                  await supabase.from('transacciones').insert({
-                    tipo,
-                    monto: functionArgs.monto,
-                    categoria: functionArgs.categoria,
-                    descripcion: functionArgs.descripcion || null,
-                    metodo_pago: functionArgs.metodo_pago || 'Efectivo',
-                    registrado_por: functionArgs.registrado_por || 'Usuario',
-                    fecha_hora: new Date().toISOString(),
-                  })
-
-                  // Enviar confirmación
-                  const confirmMsg = `✅ ${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} registrado!\n\n💰 Monto: $${functionArgs.monto.toLocaleString('es-MX')}\n📁 ${functionArgs.categoria}\n👤 ${functionArgs.registrado_por || 'Usuario'}`
-
-                  controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: confirmMsg })}\n\n`))
-                }
-              } catch (e) {
-                // Ignorar errores de tool call
-              }
-            }
-
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`))
-            break
-          }
+          if (done) break
 
           buffer += decoder.decode(value, { stream: true })
           const lines = buffer.split('\n')
@@ -182,14 +149,26 @@ Sé amigable y confirma con resumen detallado.`
               try {
                 const json = JSON.parse(data)
 
+                // Recolectar tool calls incrementalmente
                 if (json.choices?.[0]?.delta?.tool_calls) {
-                  isCollectingToolCall = true
-                  toolCallBuffer += JSON.stringify(json.choices[0].delta)
+                  const toolCall = json.choices[0].delta.tool_calls[0]
+                  if (toolCall.function?.name) {
+                    collectedToolCall.name = toolCall.function.name
+                  }
+                  if (toolCall.function?.arguments) {
+                    collectedToolCall.arguments += toolCall.function.arguments
+                  }
                 }
 
+                // Enviar contenido normal al cliente
                 if (json.choices?.[0]?.delta?.content) {
                   const chunk = json.choices[0].delta.content
                   controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk })}\n\n`))
+                }
+
+                // Detectar fin de completación
+                if (json.choices?.[0]?.finish_reason === 'tool_calls') {
+                  toolCallData = collectedToolCall
                 }
               } catch (e) {
                 // Ignorar errores de parsing
@@ -198,6 +177,49 @@ Sé amigable y confirma con resumen detallado.`
           }
         }
 
+        // ✅ AHORA: Procesar tool call DESPUÉS de stream completo pero ANTES de cerrar
+        if (toolCallData && toolCallData.name && toolCallData.arguments) {
+          try {
+            const functionName = toolCallData.name
+            const functionArgs = JSON.parse(toolCallData.arguments)
+
+            const tipo = functionName === 'registrar_gasto' ? 'gasto' : 'ingreso'
+
+            // 1. Enviar mensaje de "procesando..."
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              chunk: '\n\n⏳ Registrando en base de datos...'
+            })}\n\n`))
+
+            // 2. Insertar en Supabase
+            const { error } = await supabase.from('transacciones').insert({
+              tipo,
+              monto: functionArgs.monto,
+              categoria: functionArgs.categoria,
+              descripcion: functionArgs.descripcion || null,
+              metodo_pago: functionArgs.metodo_pago || 'Efectivo',
+              registrado_por: functionArgs.registrado_por || 'Usuario',
+              fecha_hora: new Date().toISOString(),
+            })
+
+            // 3. Enviar confirmación DESPUÉS de registrar
+            if (error) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                chunk: `\n\n❌ Error al registrar: ${error.message}`
+              })}\n\n`))
+            } else {
+              const confirmMsg = `\n\n✅ **${tipo === 'gasto' ? 'Gasto' : 'Ingreso'} registrado exitosamente!**\n\n💰 **Monto:** $${functionArgs.monto.toLocaleString('es-MX')} MXN\n📁 **Categoría:** ${functionArgs.categoria}\n💳 **Método:** ${functionArgs.metodo_pago || 'Efectivo'}\n👤 **Registrado por:** ${functionArgs.registrado_por || 'Usuario'}\n\n🎉 Puedes ver el resumen actualizado en el Dashboard.`
+
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: confirmMsg })}\n\n`))
+            }
+          } catch (e: any) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              chunk: `\n\n❌ Error procesando función: ${e.message}`
+            })}\n\n`))
+          }
+        }
+
+        // Señal final de stream completo
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`))
         controller.close()
       } catch (error: any) {
         console.error('Chat stream error:', error)
