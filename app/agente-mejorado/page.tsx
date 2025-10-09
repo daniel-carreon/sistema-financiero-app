@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Send, Upload, X, Bot, Loader2, Square, Brain } from 'lucide-react'
+import { Send, Upload, X, Bot, Loader2, Square, Brain, User } from 'lucide-react'
 import { useEnhancedChat } from '@/hooks/useEnhancedChat'
 import { useImageUpload } from '@/hooks/useImageUpload'
 import ReactMarkdown from 'react-markdown'
@@ -284,10 +284,17 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`relative flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up z-10`}
+            className={`relative flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up z-10`}
           >
+            {/* Avatar del asistente (a la izquierda) */}
+            {msg.role === 'assistant' && (
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 dark:from-emerald-500/20 dark:to-cyan-500/20 backdrop-blur-xl border-2 border-emerald-500/50 dark:border-emerald-500/30 flex items-center justify-center shadow-lg">
+                <Bot className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            )}
+
             <div
-              className={`max-w-[80%] p-4 rounded-2xl shadow-2xl ${
+              className={`max-w-[75%] p-4 rounded-2xl shadow-2xl ${
                 msg.role === 'user'
                   ? 'bg-gradient-to-br from-emerald-500 to-cyan-500 text-white border-2 border-emerald-400/50 backdrop-blur-xl'
                   : 'bg-white/20 dark:bg-white/10 backdrop-blur-2xl text-gray-900 dark:text-white border-2 border-white/30 dark:border-white/20'
@@ -332,6 +339,13 @@ Diferencia: $${Math.abs(montoDeclared - montoOCR).toLocaleString('es-MX')}
                 </div>
               )}
             </div>
+
+            {/* Avatar del usuario (a la derecha) */}
+            {msg.role === 'user' && (
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 border-2 border-emerald-400/50 flex items-center justify-center shadow-lg">
+                <User className="w-5 h-5 text-white" />
+              </div>
+            )}
           </div>
         ))}
 
