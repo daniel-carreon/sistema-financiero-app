@@ -15,8 +15,7 @@ export async function GET(request: Request) {
   let query = supabase
     .from('transacciones')
     .select('*')
-    .eq('status', 'activo')
-    .order('fecha_hora', { ascending: false })
+    .order('fecha', { ascending: false })
 
   // Filtros según la vista
   const now = new Date()
@@ -24,23 +23,23 @@ export async function GET(request: Request) {
   if (vista === 'personalizada' && fechaInicio && fechaFin) {
     // Rango personalizado
     query = query
-      .gte('fecha_hora', `${fechaInicio}T00:00:00`)
-      .lte('fecha_hora', `${fechaFin}T23:59:59`)
+      .gte('fecha', `${fechaInicio}T00:00:00`)
+      .lte('fecha', `${fechaFin}T23:59:59`)
   } else if (vista === 'diaria') {
     // Últimos 7 días
     const sevenDaysAgo = new Date(now)
     sevenDaysAgo.setDate(now.getDate() - 7)
-    query = query.gte('fecha_hora', sevenDaysAgo.toISOString())
+    query = query.gte('fecha', sevenDaysAgo.toISOString())
   } else if (vista === 'semanal') {
     // Últimas 4 semanas
     const fourWeeksAgo = new Date(now)
     fourWeeksAgo.setDate(now.getDate() - 28)
-    query = query.gte('fecha_hora', fourWeeksAgo.toISOString())
+    query = query.gte('fecha', fourWeeksAgo.toISOString())
   } else {
     // Últimos 12 meses
     const twelveMonthsAgo = new Date(now)
     twelveMonthsAgo.setMonth(now.getMonth() - 12)
-    query = query.gte('fecha_hora', twelveMonthsAgo.toISOString())
+    query = query.gte('fecha', twelveMonthsAgo.toISOString())
   }
 
   const { data, error } = await query.limit(500)
