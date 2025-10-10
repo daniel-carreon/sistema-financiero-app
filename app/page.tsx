@@ -31,8 +31,23 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    procesarGastosRecurrentes() // Procesar gastos automáticos primero
     fetchKPIs()
   }, [vista, fechaInicio, fechaFin])
+
+  const procesarGastosRecurrentes = async () => {
+    try {
+      const response = await fetch('/api/gastos-recurrentes/procesar', {
+        method: 'POST'
+      })
+      const data = await response.json()
+      if (data.procesados > 0) {
+        console.log(`✅ Procesados ${data.procesados} gastos recurrentes:`, data.gastos)
+      }
+    } catch (error) {
+      console.error('Error al procesar gastos recurrentes:', error)
+    }
+  }
 
   const fetchKPIs = async () => {
     setLoading(true)

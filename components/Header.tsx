@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ThemeToggle } from './ThemeToggle'
-import { LayoutDashboard, FileText, MessageSquare, Calendar, Bot, Upload } from 'lucide-react'
+import { LayoutDashboard, FileText, MessageSquare, Calendar, Bot, Upload, Repeat } from 'lucide-react'
 
 export function Header() {
   const pathname = usePathname()
@@ -11,6 +11,7 @@ export function Header() {
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/registro', label: 'Registro', icon: FileText },
+    { href: '/gastos-recurrentes', label: 'Recurrentes', icon: Repeat },
     // { href: '/corte-diario', label: 'Corte Diario', icon: Calendar },
     // { href: '/upload-excel', label: 'Upload CSV', icon: Upload },
     { href: '/agente-mejorado', label: 'Agente IA', icon: Bot },
