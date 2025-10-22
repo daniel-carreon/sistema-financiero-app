@@ -9,15 +9,30 @@ const supabase = createClient(
 // GET: Obtener todos los gastos recurrentes
 export async function GET() {
   const { data, error } = await supabase
-    .from('gastos_recurrentes')
+    .from('gastos_mensuales')
     .select('*')
-    .order('dia_cobro', { ascending: true })
+    .order('dia_de_cobro', { ascending: true })
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ data })
+  // Mapear columnas de DB a formato esperado por frontend
+  const mappedData = data?.map(gasto => ({
+    id: gasto.id,
+    nombre: gasto.nombre_app,
+    dia_cobro: gasto.dia_de_cobro,
+    monto: gasto.monto,
+    activo: gasto.activo,
+    categoria: 'Suscripciones', // Valor por defecto
+    metodo_pago: 'Tarjeta', // Valor por defecto
+    cuenta: null,
+    ultima_ejecucion: null,
+    created_at: gasto.created_at,
+    updated_at: gasto.updated_at
+  }))
+
+  return NextResponse.json({ data: mappedData })
 }
 
 // POST: Crear nuevo gasto recurrente
@@ -25,15 +40,12 @@ export async function POST(request: Request) {
   const body = await request.json()
 
   const { data, error } = await supabase
-    .from('gastos_recurrentes')
+    .from('gastos_mensuales')
     .insert({
-      nombre: body.nombre,
-      dia_cobro: body.dia_cobro,
+      nombre_app: body.nombre,
+      dia_de_cobro: body.dia_cobro,
       monto: body.monto,
       activo: body.activo ?? true,
-      categoria: body.categoria || 'Otros Gastos',
-      metodo_pago: body.metodo_pago || 'Tarjeta',
-      cuenta: body.cuenta || null,
     })
     .select()
 
@@ -41,7 +53,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ data }, { status: 201 })
+  // Mapear respuesta
+  const mappedData = data?.map(gasto => ({
+    id: gasto.id,
+    nombre: gasto.nombre_app,
+    dia_cobro: gasto.dia_de_cobro,
+    monto: gasto.monto,
+    activo: gasto.activo,
+    categoria: 'Suscripciones',
+    metodo_pago: 'Tarjeta',
+    cuenta: null,
+    ultima_ejecucion: null,
+    created_at: gasto.created_at,
+    updated_at: gasto.updated_at
+  }))
+
+  return NextResponse.json({ data: mappedData }, { status: 201 })
 }
 
 // PUT: Actualizar gasto recurrente
@@ -53,15 +80,12 @@ export async function PUT(request: Request) {
   }
 
   const { data, error } = await supabase
-    .from('gastos_recurrentes')
+    .from('gastos_mensuales')
     .update({
-      nombre: body.nombre,
-      dia_cobro: body.dia_cobro,
+      nombre_app: body.nombre,
+      dia_de_cobro: body.dia_cobro,
       monto: body.monto,
       activo: body.activo,
-      categoria: body.categoria,
-      metodo_pago: body.metodo_pago,
-      cuenta: body.cuenta,
       updated_at: new Date().toISOString(),
     })
     .eq('id', body.id)
@@ -71,7 +95,22 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ data })
+  // Mapear respuesta
+  const mappedData = data?.map(gasto => ({
+    id: gasto.id,
+    nombre: gasto.nombre_app,
+    dia_cobro: gasto.dia_de_cobro,
+    monto: gasto.monto,
+    activo: gasto.activo,
+    categoria: 'Suscripciones',
+    metodo_pago: 'Tarjeta',
+    cuenta: null,
+    ultima_ejecucion: null,
+    created_at: gasto.created_at,
+    updated_at: gasto.updated_at
+  }))
+
+  return NextResponse.json({ data: mappedData })
 }
 
 // DELETE: Eliminar gasto recurrente
@@ -84,7 +123,7 @@ export async function DELETE(request: Request) {
   }
 
   const { error } = await supabase
-    .from('gastos_recurrentes')
+    .from('gastos_mensuales')
     .delete()
     .eq('id', id)
 

@@ -18,10 +18,10 @@ export async function POST() {
   try {
     // 1. Obtener todos los gastos recurrentes activos para el día actual
     const { data: gastosRecurrentes, error: errorGastos } = await supabase
-      .from('gastos_recurrentes')
+      .from('gastos_mensuales')
       .select('*')
       .eq('activo', true)
-      .eq('dia_cobro', diaActual)
+      .eq('dia_de_cobro', diaActual)
 
     if (errorGastos) {
       return NextResponse.json({ error: errorGastos.message }, { status: 500 })
@@ -37,10 +37,19 @@ export async function POST() {
     const transaccionesCreadas = []
     const gastosActualizados = []
 
-    // 2. Procesar cada gasto recurrente
+    // 2. Verificar qué gastos ya fueron procesados hoy
     for (const gasto of gastosRecurrentes) {
-      // Verificar si ya se procesó hoy
-      if (gasto.ultima_ejecucion === fechaHoy) {
+      // Verificar si ya existe una transacción para este gasto hoy
+      const { data: transaccionExistente } = await supabase
+        .from('transacciones')
+        .select('id')
+        .eq('concepto', `${gasto.nombre_app} (Recurrente)`)
+        .gte('fecha', `${fechaHoy}T00:00:00`)
+        .lte('fecha', `${fechaHoy}T23:59:59`)
+        .limit(1)
+
+      if (transaccionExistente && transaccionExistente.length > 0) {
+        console.log(`⏭️ Gasto "${gasto.nombre_app}" ya procesado hoy`)
         continue // Ya se procesó hoy, skip
       }
 
@@ -50,35 +59,23 @@ export async function POST() {
         .insert({
           tipo: 'gasto',
           monto: gasto.monto,
-          categoria: gasto.categoria || 'Otros Gastos',
-          concepto: `${gasto.nombre} (Recurrente)`,
-          descripcion: `Gasto recurrente automático: ${gasto.nombre}`,
-          metodo_pago: gasto.metodo_pago || 'Tarjeta',
+          categoria: 'Suscripciones',
+          concepto: `${gasto.nombre_app} (Recurrente)`,
+          descripcion: `Gasto recurrente automático: ${gasto.nombre_app}`,
+          metodo_pago: 'Tarjeta',
           registrado_por: 'Sistema Automático',
           fecha: hoy.toISOString(),
         })
         .select()
 
       if (errorTransaccion) {
-        console.error(`Error al crear transacción para ${gasto.nombre}:`, errorTransaccion)
+        console.error(`❌ Error al crear transacción para ${gasto.nombre_app}:`, errorTransaccion)
         continue
       }
 
-      // Actualizar ultima_ejecucion
-      const { error: errorUpdate } = await supabase
-        .from('gastos_recurrentes')
-        .update({
-          ultima_ejecucion: fechaHoy,
-          updated_at: hoy.toISOString()
-        })
-        .eq('id', gasto.id)
-
-      if (errorUpdate) {
-        console.error(`Error al actualizar ultima_ejecucion para ${gasto.nombre}:`, errorUpdate)
-      }
-
       transaccionesCreadas.push(transaccion?.[0])
-      gastosActualizados.push(gasto.nombre)
+      gastosActualizados.push(gasto.nombre_app)
+      console.log(`✅ Gasto "${gasto.nombre_app}" procesado: $${gasto.monto}`)
     }
 
     return NextResponse.json({
