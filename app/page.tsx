@@ -28,6 +28,7 @@ export default function HomePage() {
     transacciones: 0,
   })
 
+  const [rangoFechas, setRangoFechas] = useState({ inicio: '', fin: '' })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -81,6 +82,12 @@ export default function HomePage() {
         startDate = new Date()
         startDate.setDate(startDate.getDate() - 30)
     }
+
+    // Guardar rango de fechas para mostrar
+    setRangoFechas({
+      inicio: startDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }),
+      fin: endDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
+    })
 
     // Consultar transacciones en lugar de resumen_diario
     const { data, error } = await supabase
@@ -147,6 +154,11 @@ export default function HomePage() {
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           Vista general de tus finanzas · {getVistaLabel()}
         </p>
+        {rangoFechas.inicio && rangoFechas.fin && (
+          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-medium mt-1">
+            📊 Del {rangoFechas.inicio} al {rangoFechas.fin}
+          </p>
+        )}
       </div>
 
       {/* Selector de Vista - AHORA EN EL DASHBOARD */}
